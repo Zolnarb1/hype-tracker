@@ -1,0 +1,15 @@
+category,weekday,dow,relative_views
+anime,Monday,1,1.039
+anime,Tuesday,2,0.991
+anime,Wednesday,3,0.965
+anime,Thursday,4,0.963
+anime,Friday,5,0.960
+anime,Saturday,6,1.006
+anime,Sunday,7,1.077
+game,Monday,1,1.030
+game,Tuesday,2,0.999
+game,Wednesday,3,0.983
+game,Thursday,4,0.986
+game,Friday,5,1.007
+game,Saturday,6,0.978
+game,Sunday,7,1.016
