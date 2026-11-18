@@ -5,6 +5,8 @@
 ![Decay curves](results/decay_curves.png)
 
 ## Findings (36 hand-picked titles, English Wikipedia, Jan 2020 – Nov 2026)
+*Numbers below are from the 14 Nov 2026 snapshot. The `results/` folder is refreshed automatically every week (see [Automated refresh](#automated-refresh)).*
+
 | | Titles | Median half-life | Attention kept after 90 days | after 365 days |
 |---|---|---|---|---|
 | **Anime** | 16 | **17 days** | **24.5%** | 11.3% |
@@ -39,6 +41,21 @@ SQL highlights:
 - **Weekday normalisation** against each title's own weekly mean (`05`).
 
 The SQL is **tested**: `tests/test_sql.py` runs the real models on a synthetic series whose peak, half-life and gap-filling results are known in advance.
+
+## Automated refresh
+A GitHub Actions workflow (`.github/workflows/refresh.yml`) re-runs the whole pipeline every Monday and commits the new results, so the marts and charts stay current without manual work.
+
+```
+ingest (yesterday's data) ──► quality gate ──► DuckDB SQL marts ──► charts ──► commit results/
+                               fails? nothing is published
+```
+The **quality gate** (`src/hype/check.py`) compares the fresh extract with the last published summary (`results/refresh.json`) and stops the run if:
+- a title disappeared,
+- the extract shrank (history should only grow),
+- the newest day is more than 4 days old (API lag or a silently truncated download),
+- there are duplicate rows or negative counts.
+
+A bad API day therefore leaves the last good results in place instead of overwriting them. The gate has its own tests (`tests/test_check.py`), and the separate `ci.yml` workflow runs all tests on every push.
 
 ## Reproduce
 ```bash
