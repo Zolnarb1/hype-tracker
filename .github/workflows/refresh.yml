@@ -1,0 +1,44 @@
+name: weekly refresh
+
+# Every Monday: pull the latest Wikipedia pageviews, check them, rebuild the SQL marts and
+# charts, and commit the updated results. A failed quality check publishes nothing.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt -e .
+      - run: pytest -q
+      - name: Extract (Wikimedia APIs, ~1 request/s)
+        run: python -m hype.ingest
+      - name: Data-quality gate
+        run: python -m hype.check
+      - name: Transform (DuckDB SQL marts) and charts
+        run: |
+          python -m hype.pipeline
+          python -m hype.plots
+      - name: Commit refreshed results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add results/
+          if git diff --cached --quiet; then echo "nothing changed"; exit 0; fi
+          git commit -m "Weekly refresh: pageviews up to $(python -c "import json;print(json.load(open('results/refresh.json'))['newest_day'])")"
+          git push
