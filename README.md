@@ -1,5 +1,7 @@
 # Hype Tracker
 
+[![ci](https://github.com/Zolnarb1/hype-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/Zolnarb1/hype-tracker/actions/workflows/ci.yml) ![Python 3.12](https://img.shields.io/badge/python-3.12-blue) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **How fast does attention fade after a game or anime hits its peak?** A small analytics-engineering project: extract daily Wikipedia pageviews, model them in SQL with DuckDB (staging → facts → marts, window functions throughout), test the SQL, and chart the marts.
 
 ![Decay curves](results/decay_curves.png)
@@ -70,3 +72,6 @@ Add titles by editing `titles.csv` (category, Wikipedia article title).
 
 ## Author
 Hamza Fakhri, Computer Science engineering student, Polytech Nantes.
+
+## License
+MIT, see [LICENSE](LICENSE). The public datasets used here keep their own licenses (sources linked above).
