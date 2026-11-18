@@ -1,4 +1,4 @@
-﻿"""Extract: daily English-Wikipedia pageviews for each title in titles.csv.
+"""Extract: daily English-Wikipedia pageviews for each title in titles.csv.
 
 1. Resolve each title to its canonical article (follows redirects) with the MediaWiki API.
 2. Download daily pageviews (human traffic only, all devices) from the Wikimedia REST API.
@@ -8,12 +8,14 @@ APIs are free and public; Wikimedia asks clients to send a descriptive User-Agen
 stay well under 100 requests/s (we do about 2/s).
 
 Usage:
+    python -m hype.ingest                      # 2020-01-01 .. yesterday
     python -m hype.ingest --start 2020-01-01 --end 2026-11-14
 """
 import argparse
 import csv
 import json
 import time
+from datetime import date, timedelta
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -82,7 +84,8 @@ def main(start: str, end: str) -> None:
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--start", default="2020-01-01")
-    p.add_argument("--end", default="2026-11-14")
+    # pageviews are published with about a day of delay
+    p.add_argument("--end", default=(date.today() - timedelta(days=1)).isoformat())
     a = p.parse_args()
     main(a.start, a.end)
 
